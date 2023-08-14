@@ -1,0 +1,534 @@
+{% extends "base.html" %} 
+{% block title %}Projektbeschreibung{% endblock %}
+{% block content %}
+<!-- Kopf der Webseite -->
+<body>
+<section id="home">
+        <section class="showcase">
+          <header>
+            <h2 style="color: white; font-size:2em; z-index: 99;font-weight: 400;; line-height: 1em; text-transform: uppercase;">Rezeptberechnung</h2>
+            <div class="divider"></div>
+          </header>
+        </section>
+</section>
+
+<!--- Inhalt der Webseite -->
+<div class="content">
+
+  <div class="text">
+  <h2>Fang einfach an und füge einen Rezeptlink ein!</h2>
+  <h3>... Alternativ kannst Du auch den Preis für deine Einkaufsliste berechnen.</h3>
+  {% if recipelist %}
+  <p>Dein gewähltes Rezept benötigt folgende Artikel: <br>
+    {% for items in recipelist[0][4] %}
+    {{items[0]}}, 
+    {% endfor %}
+  </p>
+  {% endif %}
+
+
+ 
+
+<!-- Aufteilung in zwei Spalten für Datenbank und Rezept/Warenkob -->
+  <div class="row">
+    <!-- Linke Spalte für Datenbank -->
+    <div class="column column-left">
+
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        {% if recipelist %}
+          {% if current_recipe_index > 0 %}
+          <form method="post" action="/Berechnung">
+            <input type="hidden" name="action" value="back">
+            <button type="submit" style="background: none; border: none;">
+                <img src="https://cdn1.iconfinder.com/data/icons/social-messaging-ui-color-round-1/254000/27-512.png" alt="picture" style="z-index: 99; height: 40px; width: 40px;">
+            </button>
+        </form>
+          {% endif %}
+        {% endif %}
+
+        {% if recipelist %}
+          {% if current_recipe_index == 0 %}
+          <div></div> 
+          {% endif %}
+        {% endif %}
+
+        {% if recipelist %}
+          {% if current_recipe_index == max_recipe_index %}
+          <div></div> 
+          {% endif %}
+        {% endif %}
+
+
+        {% if recipelist %}
+        {% if current_recipe_index > 0 and current_recipe_index <= max_recipe_index-2%}
+        <div><p>Zurück / Weiter</p></div> 
+        {% endif %}
+        {% endif %}
+        {% if recipelist %}
+          {% if current_recipe_index <= max_recipe_index-2%}
+          <form action="/Berechnung" method="POST">
+            <input type="hidden" name="action" value="weiter">
+            <button type="submit" style="background: none; border: none;">
+                <img src="https://cdn0.iconfinder.com/data/icons/social-messaging-ui-color-shapes-3/3/23-512.png" alt="picture" style=" z-index: 99;height: 40px; width: 40px">
+            </button>
+        </form>
+            {% endif %}
+        {% endif %}
+      </div>
+
+
+      <div class="centered-forms-column-left">
+        <form action="/Berechnung" method="POST">
+          <input class="datainput" type="text" name="console_link" placeholder="Link eingeben">
+          <button type="submit" class="button-47">Rezeptsuche starten</button>
+      </form>
+      
+      <form method="GET">
+        <input type="text" name="query" placeholder="Suchbegriff/Weiter Button" class="datainput2" value="{{ default_query }}">
+        <select name="category" id="category">
+            <option value="">Alle Kategorien</option>
+            <option value="obst">Obst</option>
+            <option value="gemuese">Gemüse</option>
+            <option value="backwaren">Backwaren</option>
+            <option value="backen-dessert">Backen-dessert</option>
+            <option value="kaffee-tee-kakao">Kaffe/Kakao</option>
+            <option value="saucen-oele-gewuerze">Saucen/Öle/Gewürze</option>
+            <option value="konserven-fertiggerichte">Konserven/Fertiggerichte</option>
+            <option value="eis">Eis</option>
+            <option value="eier-milch">Eier-Milch</option>
+            <option value="tiefkuehl">TK (Tiefkühl)</option>
+            <option value="fleisch-fisch">Fleisch-Fisch</option>
+      
+            <!-- Weitere Kategorien hier einfügen -->
+        </select>    
+        <button type="submit" class="button-47">Suchen</button>
+      </form>
+      </div>
+
+      <!-- Datenbank Tabelle -->
+      <div class="column-left-background">
+      <div class="overlay"></div>
+      <table class="table" style="margin-top: 10px; width: 100%; table-layout: fixed;">
+        <thead class="tabellenkopf" style="background-color: black; color: white; font-size: 20px;">
+          <tr>
+                <th scope="col"></th>
+                <th scope="col">Artikelname</th>
+                <th scope="col">Menge</th>
+                <th scope="col">Preis</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+              <td>  
+                <div style="height: 120px; overflow: hidden; border-radius: 10px; box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);">
+                  <img style="height: 105%; width: 100%;" src="{{ product.icon }}" alt="product-image"/>
+                </div>
+              </td>
+              <td style="font-size: 20px; vertical-align: middle; height: auto; color: white;">{{ product.name }}</td>
+                <td style="font-size: 25px; vertical-align: middle; color: white;">{{ product.menge }}{{ product.einheit }}</td>
+                <td style="font-size: 25px; vertical-align: middle; align-items: center;color: white;">{{ product.price }}€</td>
+                <td class="product-tile" style="vertical-align: middle;">
+                  <form action="/Berechnung" method="POST">
+                      <input type="hidden" name="action" value="add"> <!-- Verstecktes Feld, um die Aktion zu identifizieren -->
+                      <input type="hidden" name="product_name" value="{{ product.name }}"> <!-- Verstecktes Feld, um den Namen des Produkts zu übergeben -->
+                      <button type="submit" style="background: none; border: none;">
+                        <img src="https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678092-sign-add-256.png" alt="picture" style=" z-index: 99;height: 40px; width: 40px">
+                      </button> 
+                  </form>
+              </td>
+            </tr>
+            {% endfor %}
+        </tbody> 
+    </table>
+    </div>
+  </div>
+  
+  <!-- Rechte Spalte für Warenkorb / Rezept -->
+    <div class="column column-right">
+      {% if not selected_products and not recipelist%}
+      <div class="centered-forms-column-right">
+          <h5 style="margin-top: 140px">Füge das erste Produkt hinzu, um deinen Warenkorb zu sehen!<br><br>Tipp: Solltest Du ein Produkt nicht in Suche finden, <br> dann passe die Kategorie an!</h5>
+          <img src="https://cdn-icons-png.flaticon.com/512/6066/6066691.png" alt="picture" style=" z-index: 99;margin-top: 30px; margin-left: -650px;transform: rotate(140deg);height: 160px; width: 160px; border-radius: 10px; border-top-left-radius: 25px; border-top-right-radius: 25px;">
+        </div>  
+        {% endif %}
+
+      <!-- Warenkorb ohne Rezept -->
+      {% if selected_products and not recipelist %}
+      <div class="card" style="border-radius: 25px">
+        <img src="https://www.tegut.com/fileadmin/tegut_upload/Ernaehrung/nachhaltige_Ernaehrung/Nachhaltig_Einkaufen_Banner_1920x1080.jpg" alt="picture" height="200px" style="transition: transform 0.3s ease-in-out;object-fit: cover;border-top-left-radius: 25px; border-top-right-radius: 25px;">
+            <a href="https://www.tegut.com/fileadmin/tegut_upload/Ernaehrung/nachhaltige_Ernaehrung/Nachhaltig_Einkaufen_Banner_1920x1080.jpg" style="font-size: 12px; position: absolute; top: 200px; background-color: white;">Bild</a>
+        <div class="card-body">
+            <h5 class="card-title" style="font-size: 25px;">123132123</h5>
+          
+            <form action="/Berechnung" method="POST">
+              <input type="hidden" name="action" value="clear">
+              <button type="submit" style="position: absolute; top: -20px; right: -20px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/3687/3687412.png" alt="picture" style="height: 75px; width: 75px; position: absolute; top: -20px; right: -20px; border-radius: 10px;">
+              </button> 
+            </form>
+            <p style="font-size: 25px; color: black; position: absolute; top:215px; font-weight: 500;">Warenkorb:</p>
+            <p style="color:#f9f9f9;font-size:20px;  font-weight: 400;position: absolute; top: 215px; right: 10px;background-color:#970C0A; justify-content:center; align-items:center; display:flex;height:30px; width: 250px;padding: 10px; border-radius: 20px;">Gesamtpreis: {{ total_price }}€</p> 
+            {%if selected_products%}
+            <table class="table" style="margin-top: 10px; width: 100%; table-layout: fixed;">
+              <thead class="tabellenkopf" style="background-color: black; color: white; font-size: 15px;">
+                <tr> 
+                    <th scope="col"></th>
+                    <th scope="col" style="font-size:1.0em; font-weight: 500">Artikelname</th>
+                    <th scope="col"style="font-size:1.0em; font-weight: 500">Menge</th>
+                    <th scope="col"style="font-size:1.0em; font-weight: 500">Preis</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+                <tbody>
+                  {% for product in selected_products %}
+                  <tr>
+                    <td>  
+                      <div style="height: 120px; overflow: hidden; border-radius: 10px; box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);">
+                        <img style="height: 105%; width: 100%;" src="{{ product.icon }}" alt="product-image"/>
+                      </div>
+                    </td>
+                    <td style="font-size: 15px; vertical-align: middle; height: auto; color: rgb(0, 0, 0);"><div class="infotext">{{ product.name }}</div></td>
+                      <td style="font-size: 20px; vertical-align: middle; color: rgb(0, 0, 0);"><div class="infotext">{{ product.menge }}{{ product.einheit }}</div></td>
+                      <td style="font-size: 20px; vertical-align: middle; align-items: center;color: rgb(0, 0, 0);"><div class="infotext">{{ product.price }}€</div></td>
+                      <td class="product-tile" style="vertical-align: middle;">
+                        <form action="/Berechnung" method="POST" style="display: inline;">
+                          <input type="hidden" name="action" value="remove">
+                          <input type="hidden" name="product_name" value="{{ product.name }}">
+                          <button type="submit" class="x_button" style="background: none; border: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/458/458594.png" alt="picture" style=" z-index: 99;height: 40px; width: 40px">
+                          </button>
+                      </form>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody> 
+            </table>
+            {% endif %}
+        </ul>
+        </div>
+      <form action="/Berechnung" method="POST">
+        <input type="hidden" name="action" value="clear">
+        <button type="submit" style="position: absolute; top: -20px; right: -20px;">
+          <img src="https://cdn-icons-png.flaticon.com/512/3687/3687412.png" alt="picture" style="height: 75px; width: 75px; position: absolute; top: -20px; right: -20px; border-radius: 10px;">
+        </button> 
+      </form>
+
+      {% endif %}
+
+
+      <!-- Warenkorb mit Rezept -->
+      {% if recipelist %}
+      <div class="card" style="border-radius: 25px">
+        <img src="{{recipelist[0][2]}}" class="card-img-top" alt="picture" height="250px" width="20px" style="border-top-left-radius: 25px; border-top-right-radius: 25px;">
+            <a href="{{recipelist[0][2]}}" style="font-size: 12px; position: absolute; top: 200px; background-color: white;">Bild</a>
+        <div class="card-body">
+          {% if recipelist and not None %}
+            <p class="card-text" style="font-size: 15px; font-weight: 400; margin-left: -10px;color: rgb(255, 3, 3);">{{info}}</p>
+            {% endif %}
+            <h5 class="card-title" style="font-size: 25px; font-weight: 600; color: black;">{{recipelist[0][0]}}</h5>
+          
+            <form action="/Berechnung" method="POST">
+              <input type="hidden" name="action" value="clear">
+              <button type="submit" style="position: absolute; top: -20px; right: -20px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/3687/3687412.png" alt="picture" style="height: 75px; width: 75px; position: absolute; top: -20px; right: -20px; border-radius: 10px;">
+              </button> 
+            </form>
+            <p class="card-text" style="font-size: 13px; font-weight: 400; margin-top: -20px; margin-left: -10px; color: black;">{{recipelist[0][3]}}</p>
+            <p class="card-text" style="font-size: 15px; font-weight: 400; margin-left: -10px;color: black;"></p>
+            <p style="font-size: 15px; font-weight: 400; margin-left: -10px;color: black;">Rezept von: {{recipelist[0][1]}}</p>
+            <p style="color:#f9f9f9;font-size:20px;  position: absolute; top: 215px; right: 10px;background-color:#970C0A; justify-content:center; align-items:center; display:flex;height:30px; min-width: 160px; width: auto;padding: 10px; border-radius: 20px;">{{ total_price }}€ für {{recipelist[0][5]}} Portionen</p> 
+            {%if selected_products%}
+            <table class="table" style="margin-top: 10px; width: 100%; table-layout: fixed;">
+              <thead class="tabellenkopf" style="background-color: black; color: white; font-size: 15px;">
+                <tr> 
+                    <th scope="col"></th>
+                    <th scope="col" style="font-size:1.0em; font-weight: 500">Artikelname</th>
+                    <th scope="col"style="font-size:1.0em; font-weight: 500">Menge</th>
+                    <th scope="col"style="font-size:1.0em; font-weight: 500">Preis</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+                <tbody>
+                  {% for product in selected_products %}
+                  <tr>
+                    <td>  
+                      <div style="height: 120px; overflow: hidden; border-radius: 10px; box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);">
+                        <img style="height: 105%; width: 100%;" src="{{ product.icon }}" alt="product-image"/>
+                      </div>
+                    </td>
+                    <td style="font-size: 15px; vertical-align: middle; height: auto; color: rgb(0, 0, 0);"><div class="infotext">{{ product.name }}</div></td>
+                      <td style="font-size: 20px; vertical-align: middle; color: rgb(0, 0, 0);"><div class="infotext">{{ product.menge }}{{ product.einheit }}</div></td>
+                      <td style="font-size: 20px; vertical-align: middle; align-items: center;color: rgb(0, 0, 0);"><div class="infotext">{{ product.price }}€</div></td>
+                      <td class="product-tile" style="vertical-align: middle;">
+                        <form action="/Berechnung" method="POST" style="display: inline;">
+                          <input type="hidden" name="action" value="remove">
+                          <input type="hidden" name="product_name" value="{{ product.name }}">
+                          <button type="submit" class="x_button" style="background: none; border: none;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/458/458594.png" alt="picture" style=" z-index: 99;height: 40px; width: 40px">
+                          </button>
+                      </form>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody> 
+            </table>
+            {% endif %}
+        </ul>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+</div>
+</body>
+
+
+<style>
+
+body {
+  background-color: #070707;
+}
+p {
+  font-size: 1.1em;
+  color: #fff;
+  margin: 0;
+  font-weight: 200;
+  max-width: 700px;
+  padding: 10px;
+}
+.infotext {
+  color: rgb(0, 0, 0);
+  margin: 0;
+  font-weight: 400;
+  max-width: 700px;
+  padding: 10px;
+}
+h3
+{
+  font-size: 1.5em;
+  font-weight: 300;
+  color: #fff;
+  line-height: 1em;
+}
+
+  .table {
+  border-collapse: collapse;
+}
+.centered-forms-column-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px; /* Abstand zwischen Formularen und Tabelle hinzufügen */
+}
+.centered-forms-column-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px; /* Abstand zwischen Formularen und Tabelle hinzufügen */
+}
+/* CSS */
+.button-47 {
+  align-items: center;
+  background: #FFFFFF;
+  border: 0 solid #E2E8F0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  color: #1A202C;
+  display: inline-flex;
+  font-family: Inter, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  height: 50px;
+  justify-content: center;
+  line-height: 24px;
+  overflow-wrap: break-word;
+  padding: 24px;
+  text-decoration: none;
+  width: auto;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+h2
+{
+  font-size: 2em;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1em;
+
+}
+
+
+.datainput2{
+  display: inline-block;
+  font-size: 0.7em;
+  background: #fff;
+  padding: 10px 30px;
+  width: 290px;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-weight: 500;
+  height: 50px;
+  margin-top: 10px;
+  color: #111;
+  letter-spacing: 2px;
+  transition: 0.2s;
+}
+
+.datainput{
+  display: inline-block;
+  font-size: 1em;
+  background: #fff;
+  padding: 10px 30px;
+  width: 400px;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-weight: 500;
+  height: 50px;
+  margin-top: 10px;
+  color: #111;
+  letter-spacing: 2px;
+  transition: 0.2s;
+}
+
+
+.button-47:hover
+{
+  color: white;
+  background-color: #877457;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.column-left {
+  flex: 45%;
+  padding: 10px;
+  margin-right: 10px;
+}
+
+.column-left-background {
+  position: relative;
+  background: #877457;
+  border-radius: 10px; 
+  overflow: hidden; 
+}
+
+.column-left-background .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(95, 74, 74, 0.5); /* Farbe des Overlays */
+  z-index: 1;
+}
+
+.table {
+  position: relative;
+  z-index: 2; /* Die Tabelle liegt über dem Overlay */
+}
+
+
+.column-right {
+
+  flex: 35%;
+  padding: 10px;
+  margin-left: 10px;
+}
+
+  .text {
+    margin-top: 200px;
+    height: auto;
+    color: white;
+  }
+  .content {
+        position: relative;
+        z-index: 3;
+        padding: 80px;
+        margin: 0 auto;
+        max-width: 1600px;
+        min-width: 1300px;
+    }
+
+
+  .divider {
+  width: 500px;
+  height: 1000px;
+  background: linear-gradient(to bottom, gray, rgba(128, 128, 128, 0));
+  transform: skew(-20deg) rotate(70deg);
+  position: absolute;
+  top: -600px; 
+  left: 110px; 
+  z-index: -1;
+  border-radius: 50% / 10px;
+}
+
+.showcase:before {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50px;
+  height: 100%;
+  background: linear-gradient(to bottom, black, rgba(0, 0, 0, 0)); 
+  transform: skew(-160deg);
+  box-shadow: -5px 0 5px rgba(0, 0, 0, 0.3); 
+  z-index: 1;
+}
+
+.showcase:after {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 70px; 
+  width: 50px; 
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(75, 75, 75, 0.746), rgba(128, 128, 128, 0)); 
+  transform: skew(-160deg); 
+  box-shadow: -5px 0 5px rgba(0, 0, 0, 0.3); 
+  z-index: 1;
+}
+.showcase
+{
+  position: absolute;
+  right: 0;
+  width: 100%;
+  min-height: 100%;
+  padding: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #111;
+  transition: 0.5s;
+  z-index: 2;
+}
+
+
+header
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 40px 100px;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header .logo
+{
+  color: #fff;
+  text-transform: uppercase;
+}
+</style>
+
+{% endblock content %}

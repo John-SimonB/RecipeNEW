@@ -1,0 +1,223 @@
+{% extends "base.html" %} 
+{% block title %}Projektbeschreibung{% endblock %}
+{% block content %}
+<!-- Inhalt der Startseite mit Video, Text ... -->
+<section id="home">
+        <section class="showcase">
+          <header>
+            <h2 style="color: white; font-size:2em; font-weight: 400;; line-height: 1em; text-transform: uppercase;">Rezeptberechnung</h2>
+            <div class="divider"></div>
+          </header>
+          <video id="showcaseVideo" muted autoplay></video>
+          <div class="overlay"></div>
+          <div class="text">
+            <h2 id="changingHeadline">Preis gesucht?</h2>
+            <h3>Berechne mit Hilfe dieser Seite ganz einfach den Preis für ein beliebes Chefkoch-Rezept oder deine Einkaufsliste.</h3>
+            <h3>Füge dafür lediglich einen Rezeptlink in das Feld und beginn mit der Berechnung.</h3>
+            <h3>Alternativ kannst Du auch deine Einkaufsliste berechnen!</h3>
+            <p>Diese Webseite entstand im Rahmen einer Bachelorarbeit - 575710</p>
+            <a href="/Berechnung">Zur Preisberechnung</a>
+          </div>
+        </section>
+</section>
+</body>
+<script>
+ // Überschriften und Wechselanimation
+    const headlines = [
+        "Schockt dich der Preis an der Kasse?",
+        "Berechne deine Rezeptlisten und Einkaufslisten!",
+        "Günstig kochen leicht gemacht!",
+        "Reduziere den Schock beim Einkaufen",
+        "Ein Tool für Hobby & Profi Köch:innen"
+    ];
+
+    let currentHeadlineIndex = 0; 
+    function changeHeadline() {
+        const changingHeadline = document.getElementById("changingHeadline");
+        
+        currentHeadlineIndex = (currentHeadlineIndex + 1) % headlines.length;
+        
+        changingHeadline.classList.add("fade");
+        
+        setTimeout(() => {
+            changingHeadline.textContent = headlines[currentHeadlineIndex];
+            changingHeadline.classList.remove("fade"); 
+        }, 300); 
+    }
+
+    setInterval(changeHeadline, 6000);
+
+  // Video wechseln und abspielen 
+  const videos = [
+    "{{url_for('static', filename='images/video.mp4')}}",
+    "{{url_for('static', filename='images/video1.mp4')}}",
+    "{{url_for('static', filename='images/video2.mp4')}}",
+    "{{url_for('static', filename='images/video3.mp4')}}",
+    "{{url_for('static', filename='images/video4.mp4')}}",
+    "{{url_for('static', filename='images/video5.mp4')}}",
+  ];
+  const showcaseVideo = document.getElementById("showcaseVideo");
+  
+  showcaseVideo.addEventListener("ended", playRandomVideo);
+  
+  function playRandomVideo() {
+    const randomIndex = Math.floor(Math.random() * videos.length);
+    showcaseVideo.src = videos[randomIndex];
+    showcaseVideo.play();
+  }
+  
+  playRandomVideo();
+  </script>
+  
+  
+<style>
+      .fade {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out; 
+    }
+
+.divider {
+  width: 500px;
+  height: 1000px;
+  background: linear-gradient(to bottom, gray, rgba(128, 128, 128, 0));
+  transform: skew(-20deg) rotate(70deg);
+  position: absolute;
+  top: -600px; 
+  left: 110px; 
+  z-index: -1;
+  border-radius: 50% / 10px;
+}
+
+.showcase:before {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50px;
+  height: 100%;
+  background: linear-gradient(to bottom, black, rgba(0, 0, 0, 0)); 
+  transform: skew(-160deg);
+  box-shadow: -5px 0 5px rgba(0, 0, 0, 0.3); 
+  z-index: 1;
+}
+
+.showcase:after {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 70px; 
+  width: 50px; 
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(75, 75, 75, 0.746), rgba(128, 128, 128, 0)); 
+  transform: skew(-160deg); 
+  box-shadow: -5px 0 5px rgba(0, 0, 0, 0.3); 
+  z-index: 1;
+}
+.showcase
+{
+  position: absolute;
+  right: 0;
+  width: 100%;
+  min-height: 100vh;
+  padding: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #111;
+  transition: 0.5s;
+  z-index: 2;
+}
+
+.showcase video
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.4;
+}
+.overlay
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #262626d4;
+  mix-blend-mode: overlay;
+}
+.text
+{
+  position: relative;
+  z-index: 10;
+}
+
+.text h2
+{
+  font-size: 3em;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1em;
+  text-transform: uppercase;
+}
+.text h3
+{
+  font-size: 2em;
+  font-weight: 300;
+  color: #fff;
+  line-height: 1em;
+}
+.text p {
+  font-size: 1.1em;
+  color: #fff;
+  margin: 0;
+  font-weight: 200;
+  max-width: 700px;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 20px;
+  padding: 10px;
+}
+.text a
+{
+  display: inline-block;
+  font-size: 1em;
+  background: #fff;
+  padding: 10px 30px;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 10px;
+  color: #111;
+  letter-spacing: 2px;
+  transition: 0.2s;
+}
+.text a:hover
+{
+  letter-spacing: 6px;
+}
+
+
+header
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 40px 100px;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header .logo
+{
+  color: #fff;
+  text-transform: uppercase;
+}
+</style>
+
+{% endblock content %}
