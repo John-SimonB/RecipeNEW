@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 #### products = Alle Informationen des Rezeptes
 #### QUELLEN:
 #### https://www.youtube.com/watch?v=-u4GyvpQZBU
+#### https://www.chefkoch.de
 #### https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 #### https://www.youtube.com/watch?v=IFJq_cXR2lU
 #### CHAT-GPT
