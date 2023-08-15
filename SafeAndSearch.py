@@ -33,6 +33,7 @@ def levenshtein_distance(s1, s2):
 #### Die Folgende Funktion ermöglicht es eine Liste von URLS einzutragen
 #### und alle enthaltenen Artikel zurückzugeben
 #### QUELLEN:
+#### https://www.goflink.com/de-DE/shop/
 #### https://www.youtube.com/watch?v=-u4GyvpQZBU
 def AllProductsAPI(urls):
   responses = []    
@@ -106,6 +107,9 @@ def SafeProducts(ResponseLIST):
 #####################               #####################
 #####################  Testbereich  #####################
 #####################               #####################
+##### QUELLE: 
+#### https://www.goflink.com/de-DE/shop/
+
 links = [
   "https://consumer-api.goflink.com/v2/categories/obst",
   "https://consumer-api.goflink.com/v2/categories/feinkost",
